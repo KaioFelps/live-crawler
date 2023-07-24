@@ -1,61 +1,15 @@
 import { Table } from "@/libs/BootstrapComponents";
-import puppeteer from "puppeteer"
-
-type ArticleObject = {
-  title: string;
-  link: string;
-  deadLine: string;
-  gender: string;
-  goal: string;
-  cover: string;
-  badge: string;
-}
-
+import { ArticleObject } from "./api/promos/route";
 export const revalidate = 0;
 
+const url = "https://live-crawler.vercel.app/"
+// const url = "http://localhost:3000/"
+
 async function getActivePromotionsFromHabblive() {
-  try {
-    const browser = await puppeteer.launch({
-      headless:false,
-      args: ["--no-sandbox"]
-    })
-      const page = await browser.newPage()
+  const request = await fetch(url + "api/promos")
+  const data = await request.json()
 
-      await page.goto("https://habblive.in/noticias/184", {
-        waitUntil: "domcontentloaded"
-      })
-
-      await page.waitForSelector("[style='margin: 0px; padding-bottom: 1em;']")
-
-      const promosObjects = await page.evaluate(() => {
-        const promos = document.querySelectorAll("[style='margin: 0px; padding-bottom: 1em;']")
-
-        const formattedPromos: Array<ArticleObject> = []
-        
-        promos.forEach((promo) => {
-          const formattedPromo = {
-            title: promo.querySelector("a")!.textContent!,
-            link: promo.querySelector("a")!.href,
-            deadLine: (promo.querySelector("b + br")!.previousSibling! as any).data,
-            gender: (promo.querySelector("br + b + br + b")!.nextSibling! as any).data,
-            goal: (promo.querySelector("br + b + br + b + br + b")!.nextSibling! as any).data,
-            cover: (promo.querySelector("br")!.previousSibling! as HTMLImageElement).src,
-            badge: (promo.querySelector("br")!.previousSibling!.previousSibling as HTMLImageElement)!.src,
-          }
-
-          formattedPromos.push(formattedPromo)
-        })
-
-        return formattedPromos
-      })
-
-    await browser.close()
-    return promosObjects;   
-  } catch (error) {
-    console.log(error)
-
-    return [];
-  }  
+  return data.data as ArticleObject[]
 }
 
 export default async function Home() {
