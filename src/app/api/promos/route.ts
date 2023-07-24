@@ -15,15 +15,11 @@ export type ArticleObject = {
 async function getBrowser() {
   const environment = process.env.NODE_ENV
 
-  let browser;
-
   if(environment === "production") {
-    browser = await puppeteer.connect({browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS_API_KEY}`})
+    return puppeteer.connect({browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS_API_KEY}`})
   } else {    
-    browser = await puppeteer.launch()
+    return puppeteer.launch()
   }
-
-  return browser
 }
 
 export async function GET(req: Request) {
