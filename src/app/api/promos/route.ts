@@ -53,6 +53,7 @@ export async function GET(req: Request) {
           formattedPromos.push(formattedPromo)
         })
 
+        console.info(formattedPromos)
         return formattedPromos
       })
 
