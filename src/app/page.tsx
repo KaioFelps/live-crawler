@@ -11,6 +11,8 @@ type ArticleObject = {
   badge: string;
 }
 
+export const revalidate = 0;
+
 async function getActivePromotionsFromHabblive() {
   try {
     const browser = await puppeteer.launch({
