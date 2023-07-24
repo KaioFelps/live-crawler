@@ -19,7 +19,8 @@ export async function GET(req: Request) {
           const page = await browser.newPage()
     
           await page.goto("https://habblive.in/noticias/184", {
-            waitUntil: "domcontentloaded"
+            waitUntil: "domcontentloaded",
+            timeout: 7000
           })
     
           await page.waitForSelector("[style='margin: 0px; padding-bottom: 1em;']")
