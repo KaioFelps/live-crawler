@@ -61,10 +61,10 @@ export async function GET(req: Request) {
 
     return NextResponse.json({data: promosObjects})
   } catch (error) {
-    console.log(error)
+    console.error(error)
 
-    return NextResponse.json({data: []});
-  }  
+    return NextResponse.json({error}, {status: 500})
+  }
 }
 
 export const revalidate = 60
