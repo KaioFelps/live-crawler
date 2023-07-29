@@ -16,55 +16,61 @@ async function getBrowser() {
   const environment = process.env.NODE_ENV
 
   if(environment === "production") {
-    return puppeteer.connect({browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS_API_KEY}`})
+    return puppeteer.connect({
+      browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS_API_KEY}`,
+    })
   } else {    
-    return puppeteer.launch()
+    return puppeteer.launch({
+      headless: "new",
+    })
   }
 }
 
 export async function GET(req: Request) {
   try {
     const browser = await getBrowser()
-      const page = await browser.newPage()
+    const page = await browser.newPage()
 
-      await page.goto("https://habblive.in/noticias/184", {
-        waitUntil: "domcontentloaded",
-        timeout: 7000
+    await page.goto("https://habblive.in/noticias/184", {
+      timeout: 30000
+    })
+
+    await page.waitForSelector("[style='margin: 0px; padding-bottom: 1em;']")
+
+    const promosObjects = await page.evaluate(() => {
+      const promos = document.querySelectorAll("[style='margin: 0px; padding-bottom: 1em;']")
+
+      const formattedPromos: Array<ArticleObject> = []
+      
+      promos.forEach((promo) => {
+        const formattedPromo = {
+          title: promo.querySelector("a")!.textContent!,
+          link: promo.querySelector("a")!.href,
+          deadLine: (promo.querySelector("b + br")!.previousSibling! as any).data,
+          gender: (promo.querySelector("br + b + br + b")!.nextSibling! as any).data,
+          goal: (promo.querySelector("br + b + br + b + br + b")!.nextSibling! as any).data,
+          cover: (promo.querySelector("br")!.previousSibling! as HTMLImageElement).src,
+          badge: (promo.querySelector("br")!.previousSibling!.previousSibling as HTMLImageElement)!.src,
+        }
+
+        formattedPromos.push(formattedPromo)
       })
 
-      await page.waitForSelector("[style='margin: 0px; padding-bottom: 1em;']")
-
-      const promosObjects = await page.evaluate(() => {
-        const promos = document.querySelectorAll("[style='margin: 0px; padding-bottom: 1em;']")
-
-        const formattedPromos: Array<ArticleObject> = []
-        
-        promos.forEach((promo) => {
-          const formattedPromo = {
-            title: promo.querySelector("a")!.textContent!,
-            link: promo.querySelector("a")!.href,
-            deadLine: (promo.querySelector("b + br")!.previousSibling! as any).data,
-            gender: (promo.querySelector("br + b + br + b")!.nextSibling! as any).data,
-            goal: (promo.querySelector("br + b + br + b + br + b")!.nextSibling! as any).data,
-            cover: (promo.querySelector("br")!.previousSibling! as HTMLImageElement).src,
-            badge: (promo.querySelector("br")!.previousSibling!.previousSibling as HTMLImageElement)!.src,
-          }
-
-          formattedPromos.push(formattedPromo)
-        })
-
-        console.info(formattedPromos)
-        return formattedPromos
-      })
+      console.info(formattedPromos)
+      return formattedPromos
+    })
 
     await browser.close()
+    browser.disconnect()
 
     return NextResponse.json({data: promosObjects})
   } catch (error) {
     console.error(error)
 
-    return NextResponse.json({error}, {status: 500})
+    return new Response("", {
+      status: 500
+    })
   }
 }
 
-export const revalidate = 60
+export const revalidate = 0

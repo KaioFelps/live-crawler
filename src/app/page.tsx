@@ -1,12 +1,15 @@
 import { Table } from "@/libs/BootstrapComponents";
 import { ArticleObject } from "./api/promos/route";
-export const revalidate = 0;
 
-const url = "https://live-crawler.vercel.app/"
-// const url = "http://localhost:3000/"
+// const url = "https://live-crawler.vercel.app/"
+const url = "http://localhost:3000/"
 
 async function getActivePromotionsFromHabblive() {
-  const request = await fetch(url + "api/promos")
+  const request = await fetch(url + "api/promos", {
+    next: {
+      revalidate: 0,
+    }
+  })
   const data = await request.json()
 
   return data.data as ArticleObject[]
