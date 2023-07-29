@@ -67,9 +67,7 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error(error)
 
-    return new Response("", {
-      status: 500
-    })
+    return NextResponse.next({status: 500})
   }
 }
 
