@@ -1,8 +1,8 @@
+import "dotenv/config"
 import { Table } from "@/libs/BootstrapComponents";
 import { ArticleObject } from "./api/promos/route";
 
-const url = "https://live-crawler.vercel.app/"
-// const url = "http://localhost:3000/"
+const url =  process.env.NODE_ENV === "production" ? "https://live-crawler.vercel.app/" : "http://localhost:3000/"
 
 async function getActivePromotionsFromHabblive() {
   const request = await fetch(url + "api/promos", {
@@ -40,7 +40,6 @@ export default async function Home() {
               <td>{promo.deadLine}</td>
               <td>{promo.gender}</td>
               <td>{promo.goal}</td>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <td><img src={promo.badge} alt="" /></td>
             </tr>
           ))}
