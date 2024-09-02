@@ -48,7 +48,7 @@ export class Article implements Presentable<Article.Props> {
             gender: (node.find("br + b + br + b")[0].nextSibling as unknown as Text).data,
             goal: (node.find("br + b + br + b + br + b")[0].nextSibling as unknown as Text).data,
             cover: node.find("br").prev().attr("src")!,
-            badge: node.find("br").prev().attr("src")!,
+            badge: node.find("br").prev().prev().attr("src")!,
         })
     }
 
