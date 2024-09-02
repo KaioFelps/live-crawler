@@ -1,47 +1,29 @@
-import "dotenv/config"
-import { Table } from "@/libs/BootstrapComponents";
-import { ArticleObject } from "./api/promos/route";
+import { Alert, Table } from "@/libs/BootstrapComponents";
+import { Article } from "@/core/entities/article";
+import { ReactElement } from "react";
+import type { ResponseData } from "@/core/types/response"
 
-const url =  process.env.NODE_ENV === "production" ? "https://live-crawler.vercel.app" : "http://localhost:3000"
+async function getActivePromosFromHabblive(): Promise<ResponseData<Article.Props[], ReactElement>> {
+  const base = process.env.SITE_URL!
+  const request = await fetch(`${base}/api/promos`, {
+    next: { revalidate: 0 }
+  })
 
-async function getActivePromotionsFromHabblive() {
-  try {
-    const request = await fetch(`${url}/api/promos`, {
-      next: {
-        revalidate: 0,
-      }
-    })
-    
-    const data = await request.json()
-
-    return {
-      status: request.status,
-      data: data.data as ArticleObject[]
-    }
-  }
-  catch(e) {
-    console.log(e)
-
-    return {
-      status: 500,
-      data: []
-    }
-  }
+  return await request.json()
 }
 
 export default async function Home() {
-  const promos: {status: number, data: Array<ArticleObject>} = await getActivePromotionsFromHabblive()
+  const promosResponse = await getActivePromosFromHabblive()
 
   return (
-    <main>
-      <h1>Habblive Promoções</h1>
+    <main className="w-[calc(100%_-_48px)] max-w-screen-2xl mx-auto">
+      <h1 className="mt-20 mb-10 font-bold text-yellow-600">Habblive Promoções ✨</h1>
 
-      {promos.status === 500 ?
-        <span>Erro</span>  
-        :
+      {promosResponse.success ?
         <Table bordered hover striped>
           <thead>
             <tr>
+              <th>Button (cover)</th>
               <th>Título</th>
               <th>Prazo</th>
               <th>Categoria</th>
@@ -51,18 +33,20 @@ export default async function Home() {
           </thead>
 
           <tbody>
-            {promos.data.map((promo: ArticleObject) => (
+            {promosResponse.data.map(promo => (
               <tr key={promo.title.trim()}>
+                <td><img src={promo.cover} alt="" /></td>
                 <td><a href={promo.link}>{promo.title}</a></td>
                 <td>{promo.deadLine}</td>
                 <td>{promo.gender}</td>
                 <td>{promo.goal}</td>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <td><img src={promo.badge} alt="" /></td>
               </tr>
             ))}
           </tbody>
         </Table>
+        :
+        <Alert variant="danger">{promosResponse.error}</Alert>
       }
     </main>
   )
