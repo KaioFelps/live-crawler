@@ -1,9 +1,10 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Live Crawler
+Um pequeno web-crawler que busca e trata o DOM da <a href="https://habblive.in/noticias/184" target="_blank">página de promoções ativas do Habblive</a>,
+transformando as notícias em um tipo de dado consistente e apresentando as promoções numa interface simples construída com React Bootstrap.
 
-## Getting Started
+## Rodando a aplicação
 
-First, run the development server:
-
+Desenvolvimento:
 ```bash
 npm run dev
 # or
@@ -12,23 +13,21 @@ yarn dev
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000) no navegador para carregar a home.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Changelog
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### v0.2.0
+O html da página é buscado (através do `fetch` nativo).
 
-## Learn More
+Utilizando a biblioteca <a href="https://cheerio.js.org" target="_blank">Cheerio</a>, o DOM é manipulado de modo a obter os dados
+necessários para inicializar instâncias da entidade `Article`.
 
-To learn more about Next.js, take a look at the following resources:
+- A plataforma `browserless` não é mais utilizada;
+- A biblioteca `Puppeteer` não é mais utilizada.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### v0.1.0
+Utiliza-se a biblioteca <a href="https://pptr.dev/" target="_blank">Puppeteer</a> para acessar a página e buscar os dados,
+formatando-os na página `.tsx`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Como browser, utilizava-se a plataforma `browserless` para acessar o site do Habblive num ambiente serverless..
