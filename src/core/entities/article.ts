@@ -14,7 +14,7 @@ export module Article {
     }
 }
 
-class Article implements Presentable<Article.Props> {
+export class Article implements Presentable<Article.Props> {
     public readonly title: string;
     public readonly link: string;
     public readonly deadLine: string;
@@ -52,7 +52,7 @@ class Article implements Presentable<Article.Props> {
         })
     }
 
-    __present() {
+    __present(): Article.Props {
         return {
             title: this.title,
             link: this.link,

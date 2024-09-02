@@ -3,7 +3,7 @@ export interface Presentable<T = object> {
 }
 
 export class Presenter {
-    public static map(item: Presentable) {
+    public static map<T>(item: Presentable<T>) {
         return item.__present();
     }
 }
